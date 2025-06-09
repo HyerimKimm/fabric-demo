@@ -2,12 +2,18 @@ import classes from './App.module.scss';
 import * as fabric from 'fabric'; // v6
 import { useState, useEffect, useRef } from 'react';
 
+import brushIcon from './assets/images/hugeicons_brush.svg';
+import cursorIcon from './assets/images/ph_cursor-bold.svg';
+import eraserIcon from './assets/images/tabler_eraser.svg';
+
+type ToolType = 'select' | 'pen' | 'delete';
+
 function App() {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null); // canvas 객체 참조용
 
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null); // Fabric.js를 사용하여 생성한 캔버스 객체의 상태를 저장하는 용도로 사용
-  const [activeTool, setActiveTool] = useState("");
+  const [activeTool, setActiveTool] = useState<ToolType>("select");
 
   function handlePenButtonClick () {
     setActiveTool('pen');
@@ -18,17 +24,7 @@ function App() {
   }
 
   function handleDeleteButtonClick () {
-    if(!canvas) return;
-
-    setActiveTool('select');
-
-    const activeObjects = canvas.getActiveObjects();
-
-    if (activeObjects.length) {
-      activeObjects.forEach(obj => canvas.remove(obj)); // 선택된 모든 객체 제거
-      canvas.discardActiveObject(); // 선택 해제
-      canvas.requestRenderAll();    // 캔버스 리렌더링
-    }
+    setActiveTool('delete');
   }
   
   /* 캔버스 초기 세팅 */
@@ -39,25 +35,6 @@ function App() {
       const newCanvas = new fabric.Canvas(canvasRef.current, {
         width: canvasConatainer.offsetWidth,
         height: canvasConatainer.offsetHeight,
-      });
-
-      /* 마우스 휠로 zoom in, zoom out 기능을 사용하도록 설정하기 */
-      newCanvas.on("mouse:wheel", (opt: fabric.TPointerEventInfo<WheelEvent>)=>{
-        const delta = opt.e.deltaY;
-
-        let zoom: number = newCanvas.getZoom();
-
-        zoom *= 0.999 ** delta;
-
-        if(zoom>20) zoom = 20;
-        if(zoom<0.01) zoom = 0.01;
-
-        const point = new fabric.Point(opt.e.offsetX, opt.e.offsetY); // Fabric.js가 사용하는 좌표 객체
-
-        newCanvas.zoomToPoint(point, zoom);
-
-        opt.e.preventDefault();
-        opt.e.stopPropagation();
       });
 
       setCanvas(newCanvas);
@@ -96,10 +73,14 @@ function App() {
       canvas.freeDrawingBrush = brush; // ✅ 명시적으로 설정
     }
 
-    function setSelectTool () {
-      if(!canvas) return;
+    function handleDeleteObject (e: fabric.CanvasEvents["selection:created"]) {
+      const selected = e.selected;
 
-      canvas.isDrawingMode = false;
+      if(selected?.length > 0) {
+        selected.forEach(obj => canvas?.remove(obj));
+        canvas?.discardActiveObject();
+        canvas?.requestRenderAll()
+      }
     }
 
     switch(activeTool) {
@@ -107,9 +88,20 @@ function App() {
         setPenTool();
         break;
       case "select" : 
-        setSelectTool();
+        canvas.isDrawingMode = false;
+        break;
+      case "delete": 
+        canvas.isDrawingMode = false;
+        canvas.hoverCursor = 'pointer';
+        canvas.on('selection:created', handleDeleteObject);
+        canvas.on('selection:updated', handleDeleteObject);
         break;
       default: break;
+    }
+
+    return ()=>{
+      canvas.off('selection:created', handleDeleteObject);
+      canvas.off('selection:updated', handleDeleteObject);
     }
   },[activeTool, canvas]);
 
@@ -119,9 +111,15 @@ function App() {
       <canvas ref={canvasRef} className={classes.canvas} />
     </div>
       <div className={classes.tool_wrap}>
-        <button onClick={handleSelectButtonClick} className={classes.tool_button}>선택</button>
-        <button onClick={handlePenButtonClick} className={classes.tool_button}>펜</button>
-        <button onClick={handleDeleteButtonClick} className={classes.tool_button}>삭제</button>
+        <button onClick={handleSelectButtonClick} className={`${classes.tool_button} ${activeTool==='select'? classes.selected : undefined}`}>
+          <img src={cursorIcon} />
+        </button>
+        <button onClick={handlePenButtonClick} className={`${classes.tool_button} ${activeTool==='pen'? classes.selected : undefined}`}>
+          <img src={brushIcon} />
+        </button>
+        <button onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
+          <img src={eraserIcon} />
+        </button>
       </div>
     </div>
   );

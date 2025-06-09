@@ -35,4 +35,8 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  &.selected {
+    background-color: rgb(185, 185, 185);
+  }
 }
