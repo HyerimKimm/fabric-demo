@@ -96,16 +96,21 @@ function App() {
       const textbox = new fabric.Textbox('Edit me', {
         left: pointer.x,
         top: pointer.y,
-        width: 200,
-        fontSize: 20,
-        fill: '#000'
+        width: 150,
+        fontSize: 30,
+        fill: '#000',
+        editable: true,
       });
 
       canvas.add(textbox);
       canvas.setActiveObject(textbox);
+
+      setActiveTool('select');
+
       canvas.requestRenderAll();
-      
-       setActiveTool("select");
+    
+      textbox.enterEditing(); // 텍스트 박스 객체 편집모드 설정하기
+      textbox.selectAll();  
     }
 
     switch(activeTool) {
