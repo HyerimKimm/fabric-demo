@@ -5,8 +5,9 @@ import { useState, useEffect, useRef } from 'react';
 import brushIcon from './assets/images/hugeicons_brush.svg';
 import cursorIcon from './assets/images/ph_cursor-bold.svg';
 import eraserIcon from './assets/images/tabler_eraser.svg';
+import textIcon from './assets/images/solar_text-bold.svg';
 
-type ToolType = 'select' | 'pen' | 'delete';
+type ToolType = 'select' | 'pen' | 'delete' | 'text';
 
 function App() {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,10 @@ function App() {
 
   function handleDeleteButtonClick () {
     setActiveTool('delete');
+  }
+
+  function handleTextButtonClick () {
+    setActiveTool('text');
   }
   
   /* 캔버스 초기 세팅 */
@@ -79,8 +84,28 @@ function App() {
       if(selected?.length > 0) {
         selected.forEach(obj => canvas?.remove(obj));
         canvas?.discardActiveObject();
-        canvas?.requestRenderAll()
+        canvas?.requestRenderAll();
       }
+    }
+
+    function addText (opt: fabric.TPointerEventInfo<fabric.TPointerEvent>) {
+      if(!canvas) return;
+
+      const pointer = canvas.getScenePoint(opt.e);
+
+      const textbox = new fabric.Textbox('Edit me', {
+        left: pointer.x,
+        top: pointer.y,
+        width: 200,
+        fontSize: 20,
+        fill: '#000'
+      });
+
+      canvas.add(textbox);
+      canvas.setActiveObject(textbox);
+      canvas.requestRenderAll();
+      
+       setActiveTool("select");
     }
 
     switch(activeTool) {
@@ -96,20 +121,24 @@ function App() {
         canvas.on('selection:created', handleDeleteObject);
         canvas.on('selection:updated', handleDeleteObject);
         break;
+      case "text": 
+        canvas.on('mouse:down', addText);
+        break;
       default: break;
     }
 
     return ()=>{
       canvas.off('selection:created', handleDeleteObject);
       canvas.off('selection:updated', handleDeleteObject);
+      canvas.off('mouse:down', addText)
     }
   },[activeTool, canvas]);
 
   return (
     <div className={classes.page_wrap}>
       <div ref={canvasContainerRef} className={classes.canvas_wrap}>
-      <canvas ref={canvasRef} className={classes.canvas} />
-    </div>
+        <canvas ref={canvasRef} className={classes.canvas} />
+      </div>
       <div className={classes.tool_wrap}>
         <button onClick={handleSelectButtonClick} className={`${classes.tool_button} ${activeTool==='select'? classes.selected : undefined}`}>
           <img src={cursorIcon} />
@@ -119,6 +148,9 @@ function App() {
         </button>
         <button onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
           <img src={eraserIcon} />
+        </button>
+        <button  onClick={handleTextButtonClick} className={`${classes.tool_button} ${activeTool==='text'? classes.selected : undefined}`}>
+          <img src={textIcon} />
         </button>
       </div>
     </div>
