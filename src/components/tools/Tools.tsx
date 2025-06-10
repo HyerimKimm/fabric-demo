@@ -6,7 +6,7 @@ import textIcon from '../../assets/images/solar_text-bold.svg';
 import classes from './Tools.module.scss';
 import { useState, useEffect } from 'react';
 
-type ToolType = 'select' | 'pen' | 'delete' | 'text';
+type ToolType = 'select' | 'pen' | 'delete';
 
 function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   const [activeTool, setActiveTool] = useState<ToolType>("select");
@@ -21,10 +21,6 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
 
   function handleDeleteButtonClick () {
     setActiveTool('delete');
-  }
-
-  function handleTextButtonClick () {
-    setActiveTool('text');
   }
 
     /* 도구 선택 시 캔버스 모드 설정 */
@@ -44,37 +40,18 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
       canvas.freeDrawingBrush = brush; // ✅ 명시적으로 설정
     }
 
+    function clearPenTool () {
+        canvas.isDrawingMode = false;
+        canvas.freeDrawingBrush = undefined;
+    }
+
     function handleDeleteObject (e: fabric.CanvasEvents["selection:created"]) {
       const selected = e.selected;
 
       if(selected?.length > 0) {
         selected.forEach(obj => canvas?.remove(obj));
         canvas?.discardActiveObject();
-        canvas?.requestRenderAll();
       }
-    }
-
-    function addText (opt: fabric.TPointerEventInfo<fabric.TPointerEvent>) {
-      if(!canvas) return;
-      
-      const pointer = canvas.getScenePoint(opt.e);
-
-      const textbox = new fabric.Textbox('Edit me', {
-        left: pointer.x,
-        top: pointer.y,
-        width: 150,
-        fontSize: 30,
-        fill: '#000',
-        editable: true,
-        selectable: true,
-        evented: true,
-      });
-
-      canvas.add(textbox); // 텍스트 박스 추가
-      textbox.enterEditing(); // 텍스트 박스 객체 편집모드 설정하기
-      textbox.selectAll(); // 입력된 텍스트 전체 선택
-      canvas.setActiveObject(textbox); // 캔버스에서 현재 선택된 오브젝트를 이 textbox로 설정
-      canvas.requestRenderAll(); // 모든 변경 사항을 캔버스 화면에 반영
     }
     
     switch(activeTool) {
@@ -82,16 +59,12 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
         setPenTool();
         break;
       case "select" : 
-        canvas.isDrawingMode = false;
+        clearPenTool();
         break;
       case "delete": 
-        canvas.isDrawingMode = false;
-        canvas.hoverCursor = 'pointer';
+        clearPenTool();
         canvas.on('selection:created', handleDeleteObject);
         canvas.on('selection:updated', handleDeleteObject);
-        break;
-      case "text": 
-        canvas.on('mouse:down', addText);
         break;
       default: break;
     }
@@ -102,7 +75,6 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     return ()=>{
       canvas.off('selection:created', handleDeleteObject);
       canvas.off('selection:updated', handleDeleteObject);
-      canvas.off('mouse:down', addText);
     }
   },[activeTool, canvas]);
 
@@ -117,9 +89,6 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
           </button>
           <button onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
             <img src={eraserIcon} />
-          </button>
-          <button  onClick={handleTextButtonClick} className={`${classes.tool_button} ${activeTool==='text'? classes.selected : undefined}`}>
-            <img src={textIcon} />
           </button>
         </div>
     )

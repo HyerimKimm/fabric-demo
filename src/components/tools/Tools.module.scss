@@ -3,19 +3,23 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 8px;
   background-color: rgb(224, 224, 224);
-  padding: 8px;
+  padding: 4px;
   border-radius: 8px;
 }
 .tool_button {
-  width: 45px;
-  height: 45px;
-  border: 1px solid #cfcfcf;
+  width: 40px;
+  height: 40px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  background-color: transparent;
+
+  &:hover {
+    transition: 0.1s;
+    opacity: 0.5;
+  }
 
   &.selected {
     background-color: rgb(185, 185, 185);
