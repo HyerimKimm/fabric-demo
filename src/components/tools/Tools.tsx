@@ -1,10 +1,12 @@
 import * as fabric from 'fabric'; // v6
+
 import brushIcon from '../../assets/images/hugeicons_brush.svg';
 import cursorIcon from '../../assets/images/ph_cursor-bold.svg';
 import eraserIcon from '../../assets/images/tabler_eraser.svg';
-import textIcon from '../../assets/images/solar_text-bold.svg';
+
 import classes from './Tools.module.scss';
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 
 type ToolType = 'select' | 'pen' | 'delete';
 
@@ -24,7 +26,7 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   }
 
   /* 펜툴 설정 */
-  function setPenTool () {
+  const setPenTool = useCallback(() => {
     if(!canvas) return;
 
     canvas.isDrawingMode = true;
@@ -35,25 +37,25 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     brush.width = 4;
 
     canvas.freeDrawingBrush = brush; // ✅ 명시적으로 설정
-  }
+  }, [canvas]);
 
   /* 펜툴 설정 날림 */
-  function clearPenTool () {
+  const clearPenTool = useCallback(()=>{
     canvas.isDrawingMode = false;
     canvas.freeDrawingBrush = undefined;
-  }
+  }, [canvas])
 
   /* 현재 선택된 객체들을 삭제하는 메소드 */
-  function handleDeleteObject (e: fabric.CanvasEvents["selection:created"]) {
+  const handleDeleteObject = useCallback((e: fabric.CanvasEvents["selection:created"])=>{
     const selected = e.selected;
 
     if(selected?.length > 0) {
       selected.forEach(obj => canvas?.remove(obj));
       canvas?.discardActiveObject();
     }
-  }
+  }, [canvas])
 
-  useEffect(()=>{
+  useEffect(() => {
     if(!canvas) return;
 
     clearPenTool(); // 펜 사용 설정 해제
@@ -70,14 +72,10 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     canvas.requestRenderAll();
 
     return ()=>{
-      if(activeTool==='pen'){
-        clearPenTool();
-      } else if(activeTool==='delete') {
         canvas.off('selection:created', handleDeleteObject);
         canvas.off('selection:updated', handleDeleteObject);
-      }
     }
-  },[activeTool, canvas]);
+  },[activeTool, canvas, handleDeleteObject, clearPenTool, setPenTool]);
 
 
     return (
