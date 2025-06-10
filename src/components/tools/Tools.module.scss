@@ -1,0 +1,23 @@
+.tool_wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background-color: rgb(224, 224, 224);
+  padding: 8px;
+  border-radius: 8px;
+}
+.tool_button {
+  width: 45px;
+  height: 45px;
+  border: 1px solid #cfcfcf;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  &.selected {
+    background-color: rgb(185, 185, 185);
+  }
+}
