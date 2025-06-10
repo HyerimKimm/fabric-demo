@@ -56,7 +56,7 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   useEffect(()=>{
     if(!canvas) return;
 
-    clearPenTool();
+    clearPenTool(); // 펜 사용 설정 해제
 
     if(activeTool==='pen') {
         canvas.discardActiveObject();
@@ -66,13 +66,12 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
         canvas.on('selection:created', handleDeleteObject);
         canvas.on('selection:updated', handleDeleteObject);
     }
-
     
     canvas.requestRenderAll();
 
     return ()=>{
       if(activeTool==='pen'){
-        clearPenTool()
+        clearPenTool();
       } else if(activeTool==='delete') {
         canvas.off('selection:created', handleDeleteObject);
         canvas.off('selection:updated', handleDeleteObject);
