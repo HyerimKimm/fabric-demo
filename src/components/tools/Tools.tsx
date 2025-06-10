@@ -23,58 +23,60 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     setActiveTool('delete');
   }
 
-    /* 도구 선택 시 캔버스 모드 설정 */
+  /* 펜툴 설정 */
+  function setPenTool () {
+    if(!canvas) return;
+
+    canvas.isDrawingMode = true;
+
+    // Fabric v6에서는 brush를 직접 생성해줘야 함
+    const brush = new fabric.PencilBrush(canvas); // ✅ 직접 생성
+    brush.color = '#000000';
+    brush.width = 4;
+
+    canvas.freeDrawingBrush = brush; // ✅ 명시적으로 설정
+  }
+
+  /* 펜툴 설정 날림 */
+  function clearPenTool () {
+    canvas.isDrawingMode = false;
+    canvas.freeDrawingBrush = undefined;
+  }
+
+  /* 현재 선택된 객체들을 삭제하는 메소드 */
+  function handleDeleteObject (e: fabric.CanvasEvents["selection:created"]) {
+    const selected = e.selected;
+
+    if(selected?.length > 0) {
+      selected.forEach(obj => canvas?.remove(obj));
+      canvas?.discardActiveObject();
+    }
+  }
+
   useEffect(()=>{
     if(!canvas) return;
 
-    function setPenTool () {
-      if(!canvas) return;
+    clearPenTool();
 
-      canvas.isDrawingMode = true;
-
-      // Fabric v6에서는 brush를 직접 생성해줘야 함
-      const brush = new fabric.PencilBrush(canvas); // ✅ 직접 생성
-      brush.color = '#000000';
-      brush.width = 4;
-
-      canvas.freeDrawingBrush = brush; // ✅ 명시적으로 설정
-    }
-
-    function clearPenTool () {
-        canvas.isDrawingMode = false;
-        canvas.freeDrawingBrush = undefined;
-    }
-
-    function handleDeleteObject (e: fabric.CanvasEvents["selection:created"]) {
-      const selected = e.selected;
-
-      if(selected?.length > 0) {
-        selected.forEach(obj => canvas?.remove(obj));
-        canvas?.discardActiveObject();
-      }
-    }
-    
-    switch(activeTool) {
-      case "pen": 
+    if(activeTool==='pen') {
+        canvas.discardActiveObject();
         setPenTool();
-        break;
-      case "select" : 
-        clearPenTool();
-        break;
-      case "delete": 
-        clearPenTool();
+    } else if(activeTool==='delete') {
+        canvas.discardActiveObject();
         canvas.on('selection:created', handleDeleteObject);
         canvas.on('selection:updated', handleDeleteObject);
-        break;
-      default: break;
     }
 
-    canvas.discardActiveObject();
+    
     canvas.requestRenderAll();
 
     return ()=>{
-      canvas.off('selection:created', handleDeleteObject);
-      canvas.off('selection:updated', handleDeleteObject);
+      if(activeTool==='pen'){
+        clearPenTool()
+      } else if(activeTool==='delete') {
+        canvas.off('selection:created', handleDeleteObject);
+        canvas.off('selection:updated', handleDeleteObject);
+      }
     }
   },[activeTool, canvas]);
 
