@@ -4,16 +4,18 @@ import brushIcon from '../../assets/images/hugeicons_brush.svg';
 import cursorIcon from '../../assets/images/ph_cursor-bold.svg';
 import eraserIcon from '../../assets/images/tabler_eraser.svg';
 import saveIcon from '../../assets/images/lucide_save.svg';
+import fillIcon from '../../assets/images/bxs_color-fill.svg';
 
 import classes from './Tools.module.scss';
 
 import { useState, useEffect, useCallback } from 'react';
 
-type ToolType = 'select' | 'pen' | 'delete';
+type ToolType = 'select' | 'pen' | 'delete' | 'fill';
 
 function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   const [activeTool, setActiveTool] = useState<ToolType>("select");
-  const [brush, setBrush] = useState<fabric.PencilBrush | null>(null)
+  const [brush, setBrush] = useState<fabric.PencilBrush | null>(null);
+  const [fill, setFill] = useState(canvas.backgroundColor);
 
   function handleSaveButtonClick () {
     const dataUrl = canvas.toDataURL({
@@ -27,6 +29,10 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     link.click();
   }
 
+  function handleSelectFillClick () {
+    setActiveTool('fill')
+  }
+
   function handlePenButtonClick () {
     setActiveTool('pen');
   }
@@ -37,6 +43,13 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
 
   function handleDeleteButtonClick () {
     setActiveTool('delete');
+  }
+
+  /* 배경색 설정 */
+  const setFillColor = (color: string) => {
+    canvas.backgroundColor = color;
+    setFill(color);
+    canvas.renderAll();
   }
 
   /* 펜툴 설정 */
@@ -102,6 +115,9 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
           <button title="선택" onClick={handleSelectButtonClick} className={`${classes.tool_button} ${activeTool==='select'? classes.selected : undefined}`}>
             <img src={cursorIcon} />
           </button>
+          <button title="배경색" onClick={handleSelectFillClick} className={`${classes.tool_button} ${activeTool==='fill'? classes.selected : undefined}`}>
+            <img src={fillIcon} />
+          </button>
           <button title="펜" onClick={handlePenButtonClick} className={`${classes.tool_button} ${activeTool==='pen'? classes.selected : undefined}`}>
             <img src={brushIcon} />
           </button>
@@ -127,6 +143,28 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
               </button>
               <button className={classes.tool_button} onClick={()=>{ setPenTool('#000000', 4) }}>
                 <span className={`${classes.palette} ${brush?.color==='#000000' ? classes.selected : undefined}`} style={{ backgroundColor: '#000000' }} />
+              </button>
+            </div>
+          )}
+           {activeTool==='fill' && (
+            <div className={classes.sub_tool_wrap}>
+              <button className={classes.tool_button} onClick={()=>{ setFillColor('#ffffff') }}>
+                <span className={`${classes.palette} ${fill==='#ffffff' ? classes.selected : undefined}`} style={{ backgroundColor: '#ffffff' }} />
+              </button>
+              <button className={classes.tool_button} onClick={()=>{ setFillColor('#ffdddf') }}>
+                <span className={`${classes.palette} ${fill==='#ffdddf' ? classes.selected : undefined}`} style={{ backgroundColor: '#ff0000' }} />
+              </button>
+               <button className={classes.tool_button} onClick={()=>{ setFillColor('#ffffdd') }}>
+                <span className={`${classes.palette} ${fill==='#ffffdd' ? classes.selected : undefined}`} style={{ backgroundColor: '#ffff00' }} />
+              </button>
+              <button className={classes.tool_button} onClick={()=>{ setFillColor('#ddffdd') }}>
+                <span className={`${classes.palette} ${fill==='#ddffdd' ? classes.selected : undefined}`} style={{ backgroundColor: '#007700' }} />
+              </button>
+              <button className={classes.tool_button} onClick={()=>{ setFillColor('#ccccff') }}>
+                <span className={`${classes.palette} ${fill==='#ccccff' ? classes.selected : undefined}`} style={{ backgroundColor: '#0000ff' }} />
+              </button>
+             <button className={classes.tool_button} onClick={()=>{ setFillColor('#eeccff') }}>
+                <span className={`${classes.palette} ${fill==='#eeccff' ? classes.selected : undefined}`} style={{ backgroundColor: '#880088' }} />
               </button>
             </div>
           )}
