@@ -13,6 +13,7 @@ type ToolType = 'select' | 'pen' | 'delete';
 
 function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   const [activeTool, setActiveTool] = useState<ToolType>("select");
+  const [brush, setBrush] = useState<fabric.PencilBrush | null>(null)
 
   function handleSaveButtonClick () {
     const dataUrl = canvas.toDataURL({
@@ -39,23 +40,25 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   }
 
   /* 펜툴 설정 */
-  const setPenTool = useCallback(() => {
+  const setPenTool = useCallback((color?: string, width?: number) => {
     if(!canvas) return;
 
     canvas.isDrawingMode = true;
 
     // Fabric v6에서는 brush를 직접 생성해줘야 함
     const brush = new fabric.PencilBrush(canvas); // ✅ 직접 생성
-    brush.color = '#000000';
-    brush.width = 4;
+    brush.color = color || '#000000';
+    brush.width = width || 4;
 
     canvas.freeDrawingBrush = brush; // ✅ 명시적으로 설정
+    setBrush(brush);
   }, [canvas]);
 
   /* 펜툴 설정 날림 */
   const clearPenTool = useCallback(()=>{
     canvas.isDrawingMode = false;
     canvas.freeDrawingBrush = undefined;
+    setBrush(null);
   }, [canvas])
 
   /* 현재 선택된 객체들을 삭제하는 메소드 */
@@ -105,6 +108,28 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
           <button onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
             <img src={eraserIcon} />
           </button>
+          {activeTool==='pen' && (
+            <div className={classes.sub_tool_wrap}>
+              <button className={classes.tool_button} onClick={()=>{ setPenTool('#ff0000', 4) }}>
+                <span className={`${classes.palette} ${brush?.color==='#ff0000' ? classes.selected : undefined}`} style={{ backgroundColor: '#ff0000' }} />
+              </button>
+               <button className={classes.tool_button} onClick={()=>{ setPenTool('#ffff00', 4) }}>
+                <span className={`${classes.palette} ${brush?.color==='#ffff00' ? classes.selected : undefined}`} style={{ backgroundColor: '#ffff00' }} />
+              </button>
+              <button className={classes.tool_button} onClick={()=>{ setPenTool('#007700', 4) }}>
+                <span className={`${classes.palette} ${brush?.color==='#007700' ? classes.selected : undefined}`} style={{ backgroundColor: '#007700' }} />
+              </button>
+              <button className={classes.tool_button} onClick={()=>{ setPenTool('#0000ff', 4) }}>
+                <span className={`${classes.palette} ${brush?.color==='#0000ff' ? classes.selected : undefined}`} style={{ backgroundColor: '#0000ff' }} />
+              </button>
+             <button className={classes.tool_button} onClick={()=>{ setPenTool('#880088', 4) }}>
+                <span className={`${classes.palette} ${brush?.color==='#880088' ? classes.selected : undefined}`} style={{ backgroundColor: '#880088' }} />
+              </button>
+              <button className={classes.tool_button} onClick={()=>{ setPenTool('#000000', 4) }}>
+                <span className={`${classes.palette} ${brush?.color==='#000000' ? classes.selected : undefined}`} style={{ backgroundColor: '#000000' }} />
+              </button>
+            </div>
+          )}
         </div>
     )
 }
