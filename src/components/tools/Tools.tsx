@@ -3,6 +3,7 @@ import * as fabric from 'fabric'; // v6
 import brushIcon from '../../assets/images/hugeicons_brush.svg';
 import cursorIcon from '../../assets/images/ph_cursor-bold.svg';
 import eraserIcon from '../../assets/images/tabler_eraser.svg';
+import saveIcon from '../../assets/images/lucide_save.svg';
 
 import classes from './Tools.module.scss';
 
@@ -12,6 +13,18 @@ type ToolType = 'select' | 'pen' | 'delete';
 
 function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   const [activeTool, setActiveTool] = useState<ToolType>("select");
+
+  function handleSaveButtonClick () {
+    const dataUrl = canvas.toDataURL({
+      multiplier: 1, // 해상도
+      format: 'png',
+    });
+
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = 'whiteboard.png';
+    link.click();
+  }
 
   function handlePenButtonClick () {
     setActiveTool('pen');
@@ -80,6 +93,9 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
 
     return (
         <div className={classes.tool_wrap}>
+          <button onClick={handleSaveButtonClick} className={classes.tool_button}>
+            <img src={saveIcon} />
+          </button>
           <button onClick={handleSelectButtonClick} className={`${classes.tool_button} ${activeTool==='select'? classes.selected : undefined}`}>
             <img src={cursorIcon} />
           </button>
