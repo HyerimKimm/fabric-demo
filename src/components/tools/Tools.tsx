@@ -96,16 +96,16 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
 
     return (
         <div className={classes.tool_wrap}>
-          <button onClick={handleSaveButtonClick} className={classes.tool_button}>
+          <button title="저장하기" onClick={handleSaveButtonClick} className={classes.tool_button}>
             <img src={saveIcon} />
           </button>
-          <button onClick={handleSelectButtonClick} className={`${classes.tool_button} ${activeTool==='select'? classes.selected : undefined}`}>
+          <button title="선택" onClick={handleSelectButtonClick} className={`${classes.tool_button} ${activeTool==='select'? classes.selected : undefined}`}>
             <img src={cursorIcon} />
           </button>
-          <button onClick={handlePenButtonClick} className={`${classes.tool_button} ${activeTool==='pen'? classes.selected : undefined}`}>
+          <button title="펜" onClick={handlePenButtonClick} className={`${classes.tool_button} ${activeTool==='pen'? classes.selected : undefined}`}>
             <img src={brushIcon} />
           </button>
-          <button onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
+          <button title="지우개" onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
             <img src={eraserIcon} />
           </button>
           {activeTool==='pen' && (

@@ -18,6 +18,7 @@ function WhiteBoard () {
       const newCanvas = new fabric.Canvas(canvasRef.current, {
         width: canvasConatainer.offsetWidth,
         height: canvasConatainer.offsetHeight,
+        backgroundColor: '#ffffff'
       });
 
       setCanvas(newCanvas);
