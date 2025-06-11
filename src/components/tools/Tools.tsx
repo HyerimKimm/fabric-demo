@@ -5,12 +5,13 @@ import cursorIcon from '../../assets/images/ph_cursor-bold.svg';
 import eraserIcon from '../../assets/images/tabler_eraser.svg';
 import saveIcon from '../../assets/images/lucide_save.svg';
 import fillIcon from '../../assets/images/bxs_color-fill.svg';
+import textIcon from '../../assets/images/solar_text-bold.svg';
 
 import classes from './Tools.module.scss';
 
 import { useState, useEffect, useCallback } from 'react';
 
-type ToolType = 'select' | 'pen' | 'delete' | 'fill';
+type ToolType = 'select' | 'pen' | 'delete' | 'fill' | 'text';
 
 function Tools ({ canvas }: {canvas: fabric.Canvas }) {
   const [activeTool, setActiveTool] = useState<ToolType>("select");
@@ -45,6 +46,10 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     setActiveTool('delete');
   }
 
+  function handleTextButtonClick () {
+    setActiveTool('text')
+  }
+
   /* 배경색 설정 */
   const setFillColor = (color: string) => {
     canvas.backgroundColor = color;
@@ -74,6 +79,20 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     setBrush(null);
   }, [canvas])
 
+  const addTextbox = useCallback(() => {
+    const textbox = new fabric.Textbox('Edit me', {
+      left: 100,
+      top: 100,
+      width: 200,
+      fontSize: 20,
+      fill: '#000000',
+      editable: true,
+    });
+    canvas.add(textbox);
+    canvas.setActiveObject(textbox);
+    setActiveTool('select');
+  }, [canvas]);
+
   /* 현재 선택된 객체들을 삭제하는 메소드 */
   const handleDeleteObject = useCallback((e: fabric.CanvasEvents["selection:created"])=>{
     const selected = e.selected;
@@ -96,6 +115,8 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
         canvas.discardActiveObject();
         canvas.on('selection:created', handleDeleteObject);
         canvas.on('selection:updated', handleDeleteObject);
+    } else if (activeTool==='text') {
+      canvas.on('mouse:up', addTextbox)
     }
     
     canvas.requestRenderAll();
@@ -103,8 +124,9 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     return ()=>{
         canvas.off('selection:created', handleDeleteObject);
         canvas.off('selection:updated', handleDeleteObject);
+        canvas.off('mouse:up', addTextbox);
     }
-  },[activeTool, canvas, handleDeleteObject, clearPenTool, setPenTool]);
+  },[activeTool, canvas, handleDeleteObject, clearPenTool, setPenTool, addTextbox]);
 
 
     return (
@@ -121,9 +143,13 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
           <button title="펜" onClick={handlePenButtonClick} className={`${classes.tool_button} ${activeTool==='pen'? classes.selected : undefined}`}>
             <img src={brushIcon} />
           </button>
+          <button title="텍스트" onClick={handleTextButtonClick} className={`${classes.tool_button} ${activeTool==='text'? classes.selected : undefined}`}>
+            <img src={textIcon} />
+          </button>
           <button title="지우개" onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
             <img src={eraserIcon} />
           </button>
+
           {activeTool==='pen' && (
             <div className={classes.sub_tool_wrap}>
               <button className={classes.tool_button} onClick={()=>{ setPenTool('#ff0000', 4) }}>
@@ -146,7 +172,7 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
               </button>
             </div>
           )}
-           {activeTool==='fill' && (
+          {activeTool==='fill' && (
             <div className={classes.sub_tool_wrap}>
               <button className={classes.tool_button} onClick={()=>{ setFillColor('#ffffff') }}>
                 <span className={`${classes.palette} ${fill==='#ffffff' ? classes.selected : undefined}`} style={{ backgroundColor: '#ffffff' }} />
