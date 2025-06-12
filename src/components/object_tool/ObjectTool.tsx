@@ -12,6 +12,19 @@ function ObjectTool({
   canvas: fabric.Canvas;
   objectTool: { type: ObjectTypeType; x: number; y: number };
 }) {
+  function handleDeleteClick() {
+    const activeObjects = canvas.getActiveObjects();
+
+    if (activeObjects) {
+      activeObjects.forEach((activeObject) => {
+        canvas.remove(activeObject);
+      });
+
+      canvas.discardActiveObject(); // 선택 해제
+      canvas.requestRenderAll(); // 캔버스 리랜더링
+    }
+  }
+
   return (
     <div
       className={classes.tool_wrap}
@@ -35,7 +48,11 @@ function ObjectTool({
           </button>
         </>
       )}
-      <button title='객체 삭제하기' className={classes.tool_button}>
+      <button
+        title='객체 삭제하기'
+        className={classes.tool_button}
+        onClick={handleDeleteClick}
+      >
         <img src={deleteIcon} />
       </button>
     </div>

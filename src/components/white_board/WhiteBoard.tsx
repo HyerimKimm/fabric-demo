@@ -56,9 +56,9 @@ function WhiteBoard() {
 
       if (activeObj) {
         const boundingRect = activeObj.getBoundingRect();
-        console.log(activeObj.type);
+
         setObjectTool({
-          type: activeObj.type,
+          type: activeObj.type as ObjectTypeType,
           x: boundingRect.left,
           y: boundingRect.top, // 도구바가 객체 위에 떠 있도록
         });
