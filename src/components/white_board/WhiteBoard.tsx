@@ -97,7 +97,7 @@ function WhiteBoard () {
         {/* 도구모음 */}
         {canvas && <Tools canvas={canvas} />}
         {/* 인라인 도구 */}
-        {objectTool && <ObjectTool objectTool={objectTool}/>}
+        {objectTool && canvas && <ObjectTool canvas={canvas} objectTool={objectTool}/>}
       </div>
   );
 }
