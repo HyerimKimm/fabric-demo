@@ -75,7 +75,7 @@ function WhiteBoard () {
     canvas.on('object:rotating', clearToolbarPosition); // 객체 회전중일 때
     canvas.on('object:modified', handleSelection); // 객체 수정 완료 후
 
-    return ()=>{
+    return () => {
       canvas.off('selection:created', handleSelection);
       canvas.off('selection:updated', handleSelection);
       canvas.off('selection:cleared', clearToolbarPosition);
