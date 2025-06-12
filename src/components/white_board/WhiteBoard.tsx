@@ -66,13 +66,13 @@ function WhiteBoard () {
       setObjectTool(null)
     }
 
-    canvas.on('selection:created', handleSelection);
-    canvas.on('selection:updated', handleSelection);
-    canvas.on('selection:cleared', clearToolbarPosition);
-    canvas.on('object:scaling', clearToolbarPosition);
-    canvas.on('object:moving', clearToolbarPosition);
-    canvas.on('object:modified', handleSelection);
-    canvas.on('object:rotating', clearToolbarPosition);
+    canvas.on('selection:created', handleSelection); // 객체 선택 시
+    canvas.on('selection:updated', handleSelection); // 다른 객체 선택 시
+    canvas.on('selection:cleared', clearToolbarPosition); // 객체 선택 해제 시
+    canvas.on('object:scaling', clearToolbarPosition); // 객체 크기조절 중일 때
+    canvas.on('object:moving', clearToolbarPosition); // 객체 이동중일 때
+    canvas.on('object:rotating', clearToolbarPosition); // 객체 회전중일 때
+    canvas.on('object:modified', handleSelection); // 객체 수정 완료 후
 
     return ()=>{
       canvas.off('selection:created', handleSelection);
