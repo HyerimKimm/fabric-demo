@@ -9,7 +9,8 @@ function WhiteBoard () {
   const canvasRef = useRef<HTMLCanvasElement>(null); // canvas 객체 참조용
 
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null); // Fabric.js를 사용하여 생성한 캔버스 객체의 상태를 저장하는 용도로 사용
-  
+  const [objectTool, setObjectTool] = useState<{ type: string; x: number; y: number } | null>(null);
+
   /* 캔버스 초기 세팅 */
   useEffect(()=>{
     if(canvasRef.current && canvasContainerRef.current ) {
@@ -20,6 +21,7 @@ function WhiteBoard () {
         height: canvasConatainer.offsetHeight,
         backgroundColor: '#ffffff'
       });
+
 
       setCanvas(newCanvas);
 
@@ -40,6 +42,49 @@ function WhiteBoard () {
     }
   }, []);
 
+  /* 객체가 선택되었을 때 객체 툴바 띄워주기 */
+  useEffect(()=>{
+    if(!canvas) return;
+
+    const handleSelection = () => {
+      const activeObj = canvas.getActiveObject();
+      
+      if (activeObj) {
+        const boundingRect = activeObj.getBoundingRect();
+
+        setObjectTool({
+          type: activeObj.type,
+          x: boundingRect.left,
+          y: boundingRect.top, // 도구바가 객체 위에 떠 있도록
+        });
+      } else {
+        setObjectTool(null);
+      }
+    }
+
+    const clearToolbarPosition = () => {
+      setObjectTool(null)
+    }
+
+    canvas.on('selection:created', handleSelection);
+    canvas.on('selection:updated', handleSelection);
+    canvas.on('selection:cleared', clearToolbarPosition);
+    canvas.on('object:scaling', clearToolbarPosition);
+    canvas.on('object:moving', clearToolbarPosition);
+    canvas.on('object:modified', handleSelection);
+    canvas.on('object:rotating', clearToolbarPosition);
+
+    return ()=>{
+      canvas.off('selection:created', handleSelection);
+      canvas.off('selection:updated', handleSelection);
+      canvas.off('selection:cleared', clearToolbarPosition);
+      canvas.off('object:scaling', clearToolbarPosition);
+      canvas.off('object:moving', clearToolbarPosition);
+      canvas.off('object:modified', handleSelection);
+      canvas.off('object:rotating', clearToolbarPosition);
+    }
+  },[canvas]);
+
   return (
       <div className={classes.board_wrap}>
         <div 
@@ -50,6 +95,8 @@ function WhiteBoard () {
         </div>
         {/* 도구모음 */}
         {canvas && <Tools canvas={canvas} />}
+        {/* 인라인 도구 */}
+        {objectTool && <div style={{position: 'absolute', left: objectTool.x, top: objectTool.y}}>인라인 도구</div>}
       </div>
   );
 }

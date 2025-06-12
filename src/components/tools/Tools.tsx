@@ -79,18 +79,23 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
     setBrush(null);
   }, [canvas])
 
-  const addTextbox = useCallback(() => {
+  const addTextbox = useCallback((opt: fabric.TPointerEventInfo<fabric.TPointerEvent>) => {
+    const pointer = canvas.getScenePoint(opt.e);
+
     const textbox = new fabric.Textbox('Edit me', {
-      left: 100,
-      top: 100,
+      left: pointer.x,
+      top: pointer.y,
       width: 200,
+      fontFamily: 'Courier New',
       fontSize: 20,
       fill: '#000000',
       editable: true,
     });
     canvas.add(textbox);
     canvas.setActiveObject(textbox);
+
     setActiveTool('select');
+    canvas.defaultCursor = 'default';
   }, [canvas]);
 
   /* 현재 선택된 객체들을 삭제하는 메소드 */
@@ -116,7 +121,8 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
         canvas.on('selection:created', handleDeleteObject);
         canvas.on('selection:updated', handleDeleteObject);
     } else if (activeTool==='text') {
-      canvas.on('mouse:up', addTextbox)
+      canvas.defaultCursor = 'text';
+      canvas.on('mouse:up', addTextbox);
     }
     
     canvas.requestRenderAll();
@@ -127,7 +133,6 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
         canvas.off('mouse:up', addTextbox);
     }
   },[activeTool, canvas, handleDeleteObject, clearPenTool, setPenTool, addTextbox]);
-
 
     return (
         <div className={classes.tool_wrap}>
@@ -149,7 +154,6 @@ function Tools ({ canvas }: {canvas: fabric.Canvas }) {
           <button title="지우개" onClick={handleDeleteButtonClick} className={`${classes.tool_button} ${activeTool==='delete'? classes.selected : undefined}`}>
             <img src={eraserIcon} />
           </button>
-
           {activeTool==='pen' && (
             <div className={classes.sub_tool_wrap}>
               <button className={classes.tool_button} onClick={()=>{ setPenTool('#ff0000', 4) }}>
