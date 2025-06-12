@@ -4,14 +4,33 @@ import fontFamilyIcon from '../../assets/images/qlementine-icons_font-16.svg';
 import boldIcon from '../../assets/images/ooui_bold-b.svg';
 import * as fabric from 'fabric'; // v6
 import { ObjectTypeType } from '../../types';
+import { useEffect, useMemo } from 'react';
 
 function ObjectTool({
   canvas,
   objectTool,
 }: {
   canvas: fabric.Canvas;
-  objectTool: { type: ObjectTypeType; x: number; y: number };
+  objectTool: {
+    type: ObjectTypeType;
+    x: number;
+    y: number;
+    activeObj: fabric.FabricObject;
+  };
 }) {
+  const objectColor = useMemo(() => {
+    switch (objectTool.type) {
+      case 'activeselection':
+        return undefined;
+      case 'path':
+        return objectTool.activeObj.stroke;
+      case 'textbox':
+        return objectTool.activeObj.fill;
+      default:
+        return undefined;
+    }
+  }, [objectTool]);
+
   function handleDeleteClick() {
     const activeObjects = canvas.getActiveObjects();
 
@@ -25,6 +44,10 @@ function ObjectTool({
     }
   }
 
+  useEffect(() => {
+    console.log(objectTool?.activeObj?.fill);
+  }, [objectTool]);
+
   return (
     <div
       className={classes.tool_wrap}
@@ -34,7 +57,9 @@ function ObjectTool({
         <button title='색상' className={classes.tool_button}>
           <span
             className={classes.palette}
-            style={{ backgroundColor: '#ff0000' }}
+            style={{
+              backgroundColor: (objectColor as string) || '#0000000',
+            }}
           />
         </button>
       )}

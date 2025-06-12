@@ -15,6 +15,7 @@ function WhiteBoard() {
     type: ObjectTypeType;
     x: number;
     y: number;
+    activeObj: fabric.FabricObject;
   } | null>(null);
 
   /* 캔버스 초기 세팅 */
@@ -61,6 +62,7 @@ function WhiteBoard() {
           type: activeObj.type as ObjectTypeType,
           x: boundingRect.left,
           y: boundingRect.top, // 도구바가 객체 위에 떠 있도록
+          activeObj: activeObj,
         });
       } else {
         setObjectTool(null);
