@@ -32,3 +32,14 @@
     background-color: rgb(185, 185, 185);
   }
 }
+
+.palette {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+
+    &.selected {
+    outline: 3px solid grey;
+    outline-offset: 1px;
+  }
+}
