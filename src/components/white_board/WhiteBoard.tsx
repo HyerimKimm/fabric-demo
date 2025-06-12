@@ -2,7 +2,8 @@ import classes from './WhiteBoard.module.scss';
 import * as fabric from 'fabric'; // v6
 import { useState, useEffect, useRef } from 'react';
 
-import Tools from '../tools/Tools';
+import Tools from '../side_tool/SideTool';
+import ObjectTool from '../object_tool/ObjectTool';
 
 function WhiteBoard () {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -80,8 +81,8 @@ function WhiteBoard () {
       canvas.off('selection:cleared', clearToolbarPosition);
       canvas.off('object:scaling', clearToolbarPosition);
       canvas.off('object:moving', clearToolbarPosition);
-      canvas.off('object:modified', handleSelection);
       canvas.off('object:rotating', clearToolbarPosition);
+      canvas.off('object:modified', handleSelection);
     }
   },[canvas]);
 
@@ -96,7 +97,7 @@ function WhiteBoard () {
         {/* 도구모음 */}
         {canvas && <Tools canvas={canvas} />}
         {/* 인라인 도구 */}
-        {objectTool && <div style={{position: 'absolute', left: objectTool.x, top: objectTool.y}}>인라인 도구</div>}
+        {objectTool && <ObjectTool objectTool={objectTool}/>}
       </div>
   );
 }

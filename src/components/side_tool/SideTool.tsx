@@ -7,7 +7,7 @@ import saveIcon from '../../assets/images/lucide_save.svg';
 import fillIcon from '../../assets/images/bxs_color-fill.svg';
 import textIcon from '../../assets/images/solar_text-bold.svg';
 
-import classes from './Tools.module.scss';
+import classes from './SideTool.module.scss';
 
 import { useState, useEffect, useCallback } from 'react';
 
