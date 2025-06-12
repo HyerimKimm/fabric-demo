@@ -4,7 +4,7 @@ import fontFamilyIcon from '../../assets/images/qlementine-icons_font-16.svg';
 import boldIcon from '../../assets/images/ooui_bold-b.svg';
 import * as fabric from 'fabric'; // v6
 import { ObjectTypeType } from '../../types';
-import { useEffect, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 function ObjectTool({
   canvas,
@@ -44,9 +44,7 @@ function ObjectTool({
     }
   }
 
-  useEffect(() => {
-    console.log(objectTool?.activeObj?.fill);
-  }, [objectTool]);
+  function handleFontWeightClick() {}
 
   return (
     <div
@@ -68,7 +66,11 @@ function ObjectTool({
           <button className={classes.tool_button} title='글꼴 변경하기'>
             <img src={fontFamilyIcon} />
           </button>
-          <button className={classes.tool_button} title='굵게'>
+          <button
+            className={classes.tool_button}
+            title='굵게'
+            onClick={handleFontWeightClick}
+          >
             <img src={boldIcon} />
           </button>
         </>
