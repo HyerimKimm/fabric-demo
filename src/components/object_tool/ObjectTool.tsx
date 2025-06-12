@@ -4,7 +4,7 @@ import fontFamilyIcon from '../../assets/images/qlementine-icons_font-16.svg';
 import boldIcon from '../../assets/images/ooui_bold-b.svg';
 import * as fabric from 'fabric'; // v6
 import { ObjectTypeType } from '../../types';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 function ObjectTool({
   canvas,
@@ -44,7 +44,19 @@ function ObjectTool({
     }
   }
 
-  function handleFontWeightClick() {}
+  function handleFontWeightClick() {
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject && activeObject.type === 'textbox') {
+      const textbox = activeObject as fabric.Textbox;
+
+      textbox.set(
+        'fontWeight',
+        textbox.fontWeight === 'bold' ? 'normal' : 'bold'
+      );
+      canvas.requestRenderAll();
+    }
+  }
 
   return (
     <div
