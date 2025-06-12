@@ -73,6 +73,33 @@ function WhiteBoard() {
       setObjectTool(null);
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const STEP = e.shiftKey ? 10 : 1; // Shift 누르면 빠르게 이동
+      const activeObject = canvas.getActiveObject();
+
+      if (!activeObject) return;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          activeObject.left = (activeObject.left ?? 0) - STEP;
+          break;
+        case 'ArrowRight':
+          activeObject.left = (activeObject.left ?? 0) + STEP;
+          break;
+        case 'ArrowUp':
+          activeObject.top = (activeObject.top ?? 0) - STEP;
+          break;
+        case 'ArrowDown':
+          activeObject.top = (activeObject.top ?? 0) + STEP;
+          break;
+        default:
+          return; // 다른 키면 무시
+      }
+
+      activeObject.setCoords(); // 위치 정보 갱신
+      canvas.requestRenderAll();
+    };
+
     canvas.on('selection:created', handleSelection); // 객체 선택 시
     canvas.on('selection:updated', handleSelection); // 다른 객체 선택 시
     canvas.on('selection:cleared', clearToolbarPosition); // 객체 선택 해제 시
@@ -80,6 +107,7 @@ function WhiteBoard() {
     canvas.on('object:moving', clearToolbarPosition); // 객체 이동중일 때
     canvas.on('object:rotating', clearToolbarPosition); // 객체 회전중일 때
     canvas.on('object:modified', handleSelection); // 객체 수정 완료 후
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       canvas.off('selection:created', handleSelection);
@@ -89,6 +117,7 @@ function WhiteBoard() {
       canvas.off('object:moving', clearToolbarPosition);
       canvas.off('object:rotating', clearToolbarPosition);
       canvas.off('object:modified', handleSelection);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [canvas]);
 
