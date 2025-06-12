@@ -4,25 +4,29 @@ import { useState, useEffect, useRef } from 'react';
 
 import Tools from '../side_tool/SideTool';
 import ObjectTool from '../object_tool/ObjectTool';
+import { ObjectTypeType } from '../../types';
 
-function WhiteBoard () {
+function WhiteBoard() {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null); // canvas 객체 참조용
 
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null); // Fabric.js를 사용하여 생성한 캔버스 객체의 상태를 저장하는 용도로 사용
-  const [objectTool, setObjectTool] = useState<{ type: string; x: number; y: number } | null>(null);
+  const [objectTool, setObjectTool] = useState<{
+    type: ObjectTypeType;
+    x: number;
+    y: number;
+  } | null>(null);
 
   /* 캔버스 초기 세팅 */
-  useEffect(()=>{
-    if(canvasRef.current && canvasContainerRef.current ) {
+  useEffect(() => {
+    if (canvasRef.current && canvasContainerRef.current) {
       const canvasConatainer = canvasContainerRef.current;
 
       const newCanvas = new fabric.Canvas(canvasRef.current, {
         width: canvasConatainer.offsetWidth,
         height: canvasConatainer.offsetHeight,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
       });
-
 
       setCanvas(newCanvas);
 
@@ -38,21 +42,21 @@ function WhiteBoard () {
 
       return () => {
         newCanvas.dispose();
-        window.removeEventListener("resize", handleResize);
+        window.removeEventListener('resize', handleResize);
       };
     }
   }, []);
 
   /* 객체가 선택되었을 때 객체 툴바 띄워주기 */
-  useEffect(()=>{
-    if(!canvas) return;
+  useEffect(() => {
+    if (!canvas) return;
 
     const handleSelection = () => {
       const activeObj = canvas.getActiveObject();
-      
+
       if (activeObj) {
         const boundingRect = activeObj.getBoundingRect();
-
+        console.log(activeObj.type);
         setObjectTool({
           type: activeObj.type,
           x: boundingRect.left,
@@ -61,11 +65,11 @@ function WhiteBoard () {
       } else {
         setObjectTool(null);
       }
-    }
+    };
 
     const clearToolbarPosition = () => {
-      setObjectTool(null)
-    }
+      setObjectTool(null);
+    };
 
     canvas.on('selection:created', handleSelection); // 객체 선택 시
     canvas.on('selection:updated', handleSelection); // 다른 객체 선택 시
@@ -83,22 +87,25 @@ function WhiteBoard () {
       canvas.off('object:moving', clearToolbarPosition);
       canvas.off('object:rotating', clearToolbarPosition);
       canvas.off('object:modified', handleSelection);
-    }
-  },[canvas]);
+    };
+  }, [canvas]);
 
   return (
-      <div className={classes.board_wrap}>
-        <div 
-          ref={canvasContainerRef} 
-          className={classes.canvas_wrap} 
-          style={{ backgroundColor: '#fff' }}>
-            <canvas ref={canvasRef} className={classes.canvas} />
-        </div>
-        {/* 도구모음 */}
-        {canvas && <Tools canvas={canvas} />}
-        {/* 인라인 도구 */}
-        {objectTool && canvas && <ObjectTool canvas={canvas} objectTool={objectTool}/>}
+    <div className={classes.board_wrap}>
+      <div
+        ref={canvasContainerRef}
+        className={classes.canvas_wrap}
+        style={{ backgroundColor: '#fff' }}
+      >
+        <canvas ref={canvasRef} className={classes.canvas} />
       </div>
+      {/* 도구모음 */}
+      {canvas && <Tools canvas={canvas} />}
+      {/* 인라인 도구 */}
+      {objectTool && canvas && (
+        <ObjectTool canvas={canvas} objectTool={objectTool} />
+      )}
+    </div>
   );
 }
 
