@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 function ObjectTool({
   canvas,
   objectTool,
+  setObjectTool,
 }: {
   canvas: fabric.Canvas;
   objectTool: {
@@ -17,6 +18,12 @@ function ObjectTool({
     y: number;
     activeObj: fabric.FabricObject;
   };
+  setObjectTool: (objectTool: {
+    type: ObjectTypeType;
+    x: number;
+    y: number;
+    activeObj: fabric.FabricObject;
+  }) => void;
 }) {
   const objectColor = useMemo(() => {
     switch (objectTool.type) {
@@ -56,6 +63,13 @@ function ObjectTool({
       );
       canvas.requestRenderAll();
     }
+
+    setObjectTool({
+      type: objectTool.type,
+      x: objectTool.x,
+      y: objectTool.y,
+      activeObj: activeObject as fabric.FabricObject,
+    });
   }
 
   return (
@@ -79,7 +93,7 @@ function ObjectTool({
             <img src={fontFamilyIcon} />
           </button>
           <button
-            className={classes.tool_button}
+            className={`${classes.tool_button} ${(objectTool.activeObj as fabric.Textbox).fontWeight === 'bold' ? classes.selected : ''}`}
             title='굵게'
             onClick={handleFontWeightClick}
           >

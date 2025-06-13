@@ -82,15 +82,19 @@ function WhiteBoard() {
       switch (e.key) {
         case 'ArrowLeft':
           activeObject.left = (activeObject.left ?? 0) - STEP;
+          handleSelection();
           break;
         case 'ArrowRight':
           activeObject.left = (activeObject.left ?? 0) + STEP;
+          handleSelection();
           break;
         case 'ArrowUp':
           activeObject.top = (activeObject.top ?? 0) - STEP;
+          handleSelection();
           break;
         case 'ArrowDown':
           activeObject.top = (activeObject.top ?? 0) + STEP;
+          handleSelection();
           break;
         default:
           return; // 다른 키면 무시
@@ -134,7 +138,11 @@ function WhiteBoard() {
       {canvas && <Tools canvas={canvas} />}
       {/* 인라인 도구 */}
       {objectTool && canvas && (
-        <ObjectTool canvas={canvas} objectTool={objectTool} />
+        <ObjectTool
+          canvas={canvas}
+          objectTool={objectTool}
+          setObjectTool={setObjectTool}
+        />
       )}
     </div>
   );
