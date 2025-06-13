@@ -38,6 +38,13 @@ function ObjectTool({
     }
   }, [objectTool]);
 
+  const isBoldTextBox = useMemo(() => {
+    return (
+      objectTool.type === 'textbox' &&
+      (objectTool.activeObj as fabric.Textbox).fontWeight === 'bold'
+    );
+  }, [objectTool]);
+
   function handleDeleteClick() {
     const activeObjects = canvas.getActiveObjects();
 
@@ -93,7 +100,7 @@ function ObjectTool({
             <img src={fontFamilyIcon} />
           </button>
           <button
-            className={`${classes.tool_button} ${(objectTool.activeObj as fabric.Textbox).fontWeight === 'bold' ? classes.selected : ''}`}
+            className={`${classes.tool_button} ${isBoldTextBox ? classes.selected : ''}`}
             title='굵게'
             onClick={handleFontWeightClick}
           >
