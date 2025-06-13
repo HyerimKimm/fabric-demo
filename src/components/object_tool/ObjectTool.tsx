@@ -91,6 +91,23 @@ function ObjectTool({
     }
   }
 
+  function handleFontFamilyChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject && activeObject.type === 'textbox') {
+      const textbox = activeObject as fabric.Textbox;
+      textbox.set('fontFamily', e.target.value);
+      canvas.requestRenderAll();
+    }
+
+    setObjectTool({
+      type: objectTool.type,
+      x: objectTool.x,
+      y: objectTool.y,
+      activeObj: activeObject as fabric.FabricObject,
+    });
+  }
+
   function handleColorClick() {
     if (subPopupType === 'color') {
       setSubPopupType(null);
@@ -177,7 +194,25 @@ function ObjectTool({
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-              ></div>
+              >
+                <div className={classes.font_style_wrap}>
+                  <select
+                    className={classes.font_style_select}
+                    onChange={handleFontFamilyChange}
+                    value={
+                      (objectTool.activeObj as fabric.Textbox)?.fontFamily ||
+                      'Arial'
+                    }
+                  >
+                    <option value='Arial'>Arial</option>
+                    <option value='Times New Roman'>Times New Roman</option>
+                    <option value='Courier New'>Courier New</option>
+                    <option value='Georgia'>Georgia</option>
+                    <option value='Verdana'>Verdana</option>
+                    <option value='Helvetica'>Helvetica</option>
+                  </select>
+                </div>
+              </div>
             )}
           </button>
           <button
