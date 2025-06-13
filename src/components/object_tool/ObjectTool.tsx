@@ -4,7 +4,7 @@ import fontFamilyIcon from '../../assets/images/qlementine-icons_font-16.svg';
 import boldIcon from '../../assets/images/ooui_bold-b.svg';
 import * as fabric from 'fabric'; // v6
 import { ObjectTypeType } from '../../types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 function ObjectTool({
   canvas,
@@ -25,6 +25,10 @@ function ObjectTool({
     activeObj: fabric.FabricObject;
   }) => void;
 }) {
+  const [subPopupType, setSubPopupType] = useState<
+    'color' | 'fontStyle' | null
+  >(null);
+
   const objectColor = useMemo(() => {
     switch (objectTool.type) {
       case 'activeselection':
@@ -79,13 +83,33 @@ function ObjectTool({
     });
   }
 
+  function handleFontStyleClick() {
+    if (subPopupType === 'fontStyle') {
+      setSubPopupType(null);
+    } else {
+      setSubPopupType('fontStyle');
+    }
+  }
+
+  function handleColorClick() {
+    if (subPopupType === 'color') {
+      setSubPopupType(null);
+    } else {
+      setSubPopupType('color');
+    }
+  }
+
   return (
     <div
       className={classes.tool_wrap}
       style={{ left: objectTool.x, top: objectTool.y }}
     >
       {objectTool.type !== 'activeselection' && (
-        <button title='색상' className={classes.tool_button}>
+        <button
+          title='색상'
+          className={`${classes.tool_button} ${subPopupType === 'color' ? classes.selected : ''}`}
+          onClick={handleColorClick}
+        >
           <span
             className={classes.palette}
             style={{
@@ -96,7 +120,11 @@ function ObjectTool({
       )}
       {objectTool.type === 'textbox' && (
         <>
-          <button className={classes.tool_button} title='글꼴 변경하기'>
+          <button
+            className={`${classes.tool_button} ${subPopupType === 'fontStyle' ? classes.selected : ''}`}
+            title='글꼴 변경하기'
+            onClick={handleFontStyleClick}
+          >
             <img src={fontFamilyIcon} />
           </button>
           <button
