@@ -116,6 +116,51 @@ function ObjectTool({
               backgroundColor: (objectColor as string) || '#0000000',
             }}
           />
+          {subPopupType === 'color' && (
+            <div
+              className={classes.sub_popup_wrap}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <button className={classes.tool_button} title='빨간색'>
+                <span
+                  className={classes.palette}
+                  style={{ backgroundColor: '#ff0000' }}
+                />
+              </button>
+              <button className={classes.tool_button} title='노란색'>
+                <span
+                  className={classes.palette}
+                  style={{ backgroundColor: '#ffff00' }}
+                />
+              </button>
+              <button className={classes.tool_button} title='초록색'>
+                <span
+                  className={classes.palette}
+                  style={{ backgroundColor: '#008800' }}
+                />
+              </button>
+              <button className={classes.tool_button} title='파란색'>
+                <span
+                  className={classes.palette}
+                  style={{ backgroundColor: '#0000ff' }}
+                />
+              </button>
+              <button className={classes.tool_button} title='보라색'>
+                <span
+                  className={classes.palette}
+                  style={{ backgroundColor: '#880088' }}
+                />
+              </button>
+              <button className={classes.tool_button} title='검정색'>
+                <span
+                  className={classes.palette}
+                  style={{ backgroundColor: '#000000' }}
+                />
+              </button>
+            </div>
+          )}
         </button>
       )}
       {objectTool.type === 'textbox' && (
@@ -126,6 +171,14 @@ function ObjectTool({
             onClick={handleFontStyleClick}
           >
             <img src={fontFamilyIcon} />
+            {subPopupType === 'fontStyle' && (
+              <div
+                className={classes.sub_popup_wrap}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              ></div>
+            )}
           </button>
           <button
             className={`${classes.tool_button} ${isBoldTextBox ? classes.selected : ''}`}
