@@ -116,6 +116,26 @@ function ObjectTool({
     }
   }
 
+  function handleColorSelect(color: string) {
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject) {
+      if (activeObject.type === 'textbox') {
+        activeObject.set('fill', color);
+      } else if (activeObject.type === 'path') {
+        activeObject.set('stroke', color);
+      }
+      canvas.requestRenderAll();
+    }
+
+    setObjectTool({
+      type: objectTool.type,
+      x: objectTool.x,
+      y: objectTool.y,
+      activeObj: activeObject as fabric.FabricObject,
+    });
+  }
+
   return (
     <div
       className={classes.tool_wrap}
@@ -140,37 +160,61 @@ function ObjectTool({
                 e.stopPropagation();
               }}
             >
-              <button className={classes.tool_button} title='빨간색'>
+              <button
+                className={classes.tool_button}
+                title='빨간색'
+                onClick={() => handleColorSelect('#ff0000')}
+              >
                 <span
                   className={classes.palette}
                   style={{ backgroundColor: '#ff0000' }}
                 />
               </button>
-              <button className={classes.tool_button} title='노란색'>
+              <button
+                className={classes.tool_button}
+                title='노란색'
+                onClick={() => handleColorSelect('#ffff00')}
+              >
                 <span
                   className={classes.palette}
                   style={{ backgroundColor: '#ffff00' }}
                 />
               </button>
-              <button className={classes.tool_button} title='초록색'>
+              <button
+                className={classes.tool_button}
+                title='초록색'
+                onClick={() => handleColorSelect('#008800')}
+              >
                 <span
                   className={classes.palette}
                   style={{ backgroundColor: '#008800' }}
                 />
               </button>
-              <button className={classes.tool_button} title='파란색'>
+              <button
+                className={classes.tool_button}
+                title='파란색'
+                onClick={() => handleColorSelect('#0000ff')}
+              >
                 <span
                   className={classes.palette}
                   style={{ backgroundColor: '#0000ff' }}
                 />
               </button>
-              <button className={classes.tool_button} title='보라색'>
+              <button
+                className={classes.tool_button}
+                title='보라색'
+                onClick={() => handleColorSelect('#880088')}
+              >
                 <span
                   className={classes.palette}
                   style={{ backgroundColor: '#880088' }}
                 />
               </button>
-              <button className={classes.tool_button} title='검정색'>
+              <button
+                className={classes.tool_button}
+                title='검정색'
+                onClick={() => handleColorSelect('#000000')}
+              >
                 <span
                   className={classes.palette}
                   style={{ backgroundColor: '#000000' }}
