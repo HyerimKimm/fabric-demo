@@ -1,13 +1,6 @@
-import classes from './App.module.scss';
-
-import WhiteBoard from './components/white_board/WhiteBoard';
-
-
 function App() {
   return (
-    <div className={classes.page_wrap}>
-      <WhiteBoard />
-    </div>
+    <kv-think-board mode='board' board-id='BRD-0MB829GRVCKT8'></kv-think-board>
   );
 }
 
